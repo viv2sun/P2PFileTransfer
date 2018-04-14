@@ -51,6 +51,10 @@ public class PeerObject {
 		return interested.get();
 	}
 	
+	public void setInterestedFlag(boolean flag) {
+        interested.set(flag);
+    }
+	
 	@Override
     public boolean equals(Object o) {
 		

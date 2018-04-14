@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Merge {
-	 public void merge(File file, File partsDir, int numParts) {
+	 public static void merge(File file, File partsDir, int numParts) {
 	        File out = file;
 	        FileOutputStream fos;
 	        FileInputStream fis;

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 
 public class Split {
-	 public void split(File inFile, int partSize){
+	 public static void split(File inFile, int partSize){
 	        FileInputStream fis;
 	        String newFile;
 	        FileOutputStream fos;

@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.BitSet;
 import java.util.Properties;
 
 public class ConfigurationReader {
@@ -38,6 +39,20 @@ public class ConfigurationReader {
     
 	    return configurationProperties;
 	}
+	
+	public static int GetRandomIndex(BitSet bitset) 
+	{
+        if (bitset.isEmpty()) 
+        {
+            throw new RuntimeException ("The bitset is empty, cannot find a set element");
+        }
+        
+        String set = bitset.toString();
+        
+        String[] indexes = set.substring(1, set.length()-1).split(",");
+        
+        return Integer.parseInt(indexes[(int)(Math.random()*(indexes.length-1))].trim());
+    }
 
 }
 
