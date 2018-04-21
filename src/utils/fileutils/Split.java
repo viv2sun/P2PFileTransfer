@@ -5,9 +5,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import log.LoggerUtils;
 
-public class Split {
-	 public static void split(File inFile, int partSize){
+
+public class Split 
+{
+	/*
+	 * Utilities for the splitting file into different parts file
+	 */
+	 public static void split(File inFile, int partSize)
+	 {
 	        FileInputStream fis;
 	        String newFile;
 	        FileOutputStream fos;
@@ -16,12 +23,18 @@ public class Split {
 	        int read = 0;
 	        int rLen = partSize;
 	        byte[] bytePart;
-	        try {
+	        try 
+	        {
 	            fis = new FileInputStream(inFile);
-	            while (fileSize > 0) {
-	                if (fileSize <= 5) {
+	            
+	            //splitting the file into different parts depending upon the piece size
+	            while (fileSize > 0) 
+	            {
+	                if (fileSize <= 5) 
+	                {
 	                    rLen = fileSize;
 	                }
+	                
 	                bytePart = new byte[rLen];
 	                read = fis.read(bytePart, 0, rLen);
 	                fileSize = fileSize - read;
@@ -36,8 +49,10 @@ public class Split {
 	                fos = null;
 	            }
 	            fis.close();
-	        } catch (IOException e) {
-	            // log wrnings
+	        } 
+	        catch (IOException e) 
+	        {
+	        	LoggerUtils.getLogger().warning(e);
 	        }
 	    }
 }

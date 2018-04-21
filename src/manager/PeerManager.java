@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import utils.ConfigurationReader;
 import entities.PeerObject;
+import log.LoggerMain;
+import log.LoggerUtils;
 
 public class PeerManager implements Runnable 
 {
@@ -28,8 +30,13 @@ public class PeerManager implements Runnable
     private final UnchokerManager unchokerManager;
     private final List<IPeerManager> peerManagerModules = new LinkedList<>();
     private final AtomicBoolean isRandomSelectionNeeded = new AtomicBoolean(false);
+    public LoggerMain logger;
 
-    public PeerManager(int peerId, List<PeerObject> peers, int size, Properties prop) {
+    /*
+     * Constructor of the peer manager
+     */
+    public PeerManager(int peerId, List<PeerObject> peers, int size, Properties prop) 
+    {
         peerObjects.addAll(peers);
         maxNumberOfNeighbors = Integer.parseInt(
                 prop.getProperty(ConfigurationReader.ConfigurationParameters.NumberOfPreferredNeighbors.toString()));
@@ -37,14 +44,20 @@ public class PeerManager implements Runnable
                 prop.getProperty(ConfigurationReader.ConfigurationParameters.UnchokingInterval.toString())) * 1000;
         unchokerManager = new UnchokerManager(prop);
         this.size = size;
-        //_eventLogger = new EventLogger (peerId);
+        logger = new LoggerMain(peerId, LoggerUtils.getLogger());
     }
 
+    /*
+     * Get the interval for unchoking the peer
+     */
     public double getIntervalForUnchoking() 
     {
         return this.intervalForUnchoking;
     }
     
+    /*
+     * Given a peerId, set it's interested flag
+     */
     public synchronized void SetPeerInterested(int pId) 
     {
         PeerObject peer = searchPeer(pId);
@@ -55,6 +68,9 @@ public class PeerManager implements Runnable
         }
     }
 
+    /*
+     * Given a peer Id, set it's interested flag to false
+     */
     public synchronized void SetPeerNotInterested(int pId) 
     {
         PeerObject peer = searchPeer(pId);
@@ -65,6 +81,9 @@ public class PeerManager implements Runnable
         }
     }
 
+    /*
+     * Retrieve the list of interested peers
+     */
     public synchronized List<PeerObject> getAllInterestedPeers() 
     {
         List<PeerObject> peersInterested = new ArrayList<>();
@@ -79,6 +98,9 @@ public class PeerManager implements Runnable
         return peersInterested;
     }
 
+    /*
+     * Determine whether the peer is interesting based on it's bitfield
+     */
     public synchronized boolean isPeerInteresting(int pId, BitSet bitSet) 
     {
         PeerObject peer  = searchPeer(pId);
@@ -93,6 +115,9 @@ public class PeerManager implements Runnable
         return false;
     }
 
+    /*
+     * Set the parts received for peer
+     */
     public synchronized void getRcvdPart(int pId, int size) 
     {
         PeerObject peer  = searchPeer(pId);
@@ -103,6 +128,9 @@ public class PeerManager implements Runnable
         }
     }
 
+    /*
+     * returns whether the peer can upload or not
+     */
     public synchronized boolean canUploadToPeerOrNot(int pId) 
     {
         PeerObject peer = new PeerObject(pId);
@@ -111,11 +139,17 @@ public class PeerManager implements Runnable
                 unchokerManager.unchokedPeers.contains(peer));
     }
 
+    /*
+     * Starts the random selection as soon as the file is completed
+     */
     public synchronized void fileCompleted() 
     {
         isRandomSelectionNeeded.set(true);
     }
 
+    /*
+     * Determines whether the bitfield for the peer has arrived
+     */
     public synchronized void hasBitSetInfoArrived(int pId, BitSet bitSet) 
     {
         PeerObject peer  = searchPeer(pId);
@@ -128,6 +162,9 @@ public class PeerManager implements Runnable
         neighborsCompletedDownload();
     }
 
+    /*
+     * Determine whether the parts have arrived for the peer
+     */
     public synchronized void hasPartsArrived(int pId, int partsId) 
     {
         PeerObject peer  = searchPeer(pId);
@@ -140,6 +177,9 @@ public class PeerManager implements Runnable
         neighborsCompletedDownload();
     }
 
+    /*
+     * Get parts bitfield of the peer
+     */
     public synchronized BitSet getRcvPartsOfPeer(int pId) 
     {
         PeerObject peer  = searchPeer(pId);
@@ -152,6 +192,9 @@ public class PeerManager implements Runnable
         return new BitSet();
     }
 
+    /*
+     * Search a peer and return it
+     */
     public synchronized PeerObject searchPeer(int pId) 
     {
         for (PeerObject peer : peerObjects) 
@@ -161,17 +204,21 @@ public class PeerManager implements Runnable
                 return peer;
             }
         }
-        //LogHelper.getLogger().warning("Peer " + peerId + " not found");
+        
+        LoggerUtils.getLogger().warning("Peer " + pId + " not found");        
         return null;
     }
 
+    /*
+     * determines whether the neighbors have completed the download or not
+     */
     public synchronized void neighborsCompletedDownload() 
     {
         for (PeerObject peer : peerObjects) 
         {
             if (peer.rcvParts.cardinality() < size) 
             {
-                //LogHelper.getLogger().debug("Peer " + peer.getPeerId() + " has not completed yet");
+                LoggerUtils.getLogger().debug("The Peer: " + peer.getId() + " has not completed the download");
                 return;
             }
         }
@@ -182,12 +229,16 @@ public class PeerManager implements Runnable
         }
     }
 
+    /*
+     * Registering the peer manager module
+     */
     public synchronized void registerModule(IPeerManager module) 
     {
         peerManagerModules.add(module);
     }
     
-	class UnchokerManager extends Thread {
+	class UnchokerManager extends Thread 
+	{
 		
         private final int noOfUnchokedNeighbors;
         private final int unchokingInterval;
@@ -196,6 +247,9 @@ public class PeerManager implements Runnable
         final Set<PeerObject>  unchokedPeers =
                 Collections.newSetFromMap(new ConcurrentHashMap<PeerObject, Boolean>());
 
+        /*
+         * Constructor of the Unchoker Manager
+         */
         UnchokerManager(Properties conf) 
         {
             super("UnchokerManager");
@@ -204,7 +258,11 @@ public class PeerManager implements Runnable
                     conf.getProperty(ConfigurationReader.ConfigurationParameters.NumberOfPreferredNeighbors.toString())) * 1000;
         }
 
-        synchronized void SetChokedPeers(Collection<PeerObject> chokedPeers) {
+        /*
+         * Set a new list of choked peers
+         */
+        synchronized void SetChokedPeers(Collection<PeerObject> chokedPeers) 
+        {
             chokedPeers.clear();
             chokedPeers.addAll(chokedPeers);
         }
@@ -235,8 +293,10 @@ public class PeerManager implements Runnable
 
                 if (chokedPeers.size() > 0) 
                 {
-                    /*LogHelper.getLogger().debug("STATE: OPT UNCHOKED(" + _numberOfOptimisticallyUnchokedNeighbors + "):" + LogHelper.getPeerIdsAsString (_optmisticallyUnchokedPeers));
-                    _eventLogger.changeOfOptimisticallyUnchokedNeighbors(LogHelper.getPeerIdsAsString (_optmisticallyUnchokedPeers));*/
+                	String debugMsg = "State: Optimistically Unchoked(";
+                	debugMsg += noOfUnchokedNeighbors + "):" +  LoggerUtils.returnPeerIdStringFromObject(new ArrayList(unchokedPeers));
+                    LoggerUtils.getLogger().debug(debugMsg);
+                    logger.optimisticallyUnchokedNeighborsChangeLog(LoggerUtils.returnPeerIdStringFromObject((new ArrayList(unchokedPeers))));
                 }
                 for (IPeerManager module : peerManagerModules) 
                 {
@@ -265,12 +325,13 @@ public class PeerManager implements Runnable
             
             if (isRandomSelectionNeeded.get()) 
             {
-                //LogHelper.getLogger().debug("selecting preferred peers randomly");
+                LoggerUtils.getLogger().debug("Randomly selecting the peers");
                 Collections.shuffle(peersInterested);
             }
             else 
             {
-                Collections.sort(peersInterested, (o1, o2) -> {
+                Collections.sort(peersInterested, (o1, o2) -> 
+                {
 				    PeerObject p1 = (PeerObject)o1;
 				    PeerObject p2 = (PeerObject)o2;
 				    
@@ -292,22 +353,20 @@ public class PeerManager implements Runnable
                     peer.dwnloadedFrom.set(0);
                 }
 
-                // 2) SELECT THE PREFERRED PEERS BY SELECTING THE HIGHEST RANKED
-                // Select the highest ranked neighbors as "preferred"
                 preferredSetOfPeers.clear();
                 preferredSetOfPeers.addAll(peersInterested.subList(0, Math.min(maxNumberOfNeighbors, peersInterested.size())));
                 
                 if (preferredSetOfPeers.size() > 0) 
                 {
-                    //_eventLogger.changeOfPrefereedNeighbors(LogHelper.getPeerIdsAsString (_preferredPeers));
+                    logger.preferredNeighborChangeLog(LoggerUtils.returnPeerIdStringFromObject(new ArrayList(preferredSetOfPeers)));
                 }
 
-                // 3) SELECT ALL THE INTERESTED AND UNINTERESTED PEERS, REMOVE THE PREFERRED. THE RESULTS ARE THE CHOKED PEERS
+                
                 List<PeerObject> peersChoked = new LinkedList<>(peerObjects);
                 peersChoked.removeAll(preferredSetOfPeers);
                 peersChokedIds.addAll(PeerObject.getPeerIds(peersChoked));
 
-                // 4) SELECT ALLE THE INTERESTED PEERS, REMOVE THE PREFERRED. THE RESULTS ARE THE CHOKED PEERS THAT ARE "OPTIMISTICALLY-UNCHOKABLE"
+                
                 if (maxNumberOfNeighbors >= peersInterested.size()) 
                 {
                     unchokedPeers = new ArrayList<>();
@@ -321,30 +380,28 @@ public class PeerManager implements Runnable
             }
 
             // debug
-//            LogHelper.getLogger().debug("STATE: INTERESTED:" + LogHelper.getPeerIdsAsString (interestedPeers));
-//            LogHelper.getLogger().debug("STATE: UNCHOKED (" + _numberOfPreferredNeighbors + "):" + LogHelper.getPeerIdsAsString2 (preferredNeighborsIDs));
-//            LogHelper.getLogger().debug("STATE: CHOKED:" + LogHelper.getPeerIdsAsString2 (chokedPeersIDs));
+            LoggerUtils.getLogger().debug("State: Unchoked (" + this.maxNumberOfNeighbors + "):" + LoggerUtils.returnPeerIdString(new ArrayList(preferredNeighIds)));
+            LoggerUtils.getLogger().debug("State: Choked:" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersChokedIds)));
+           LoggerUtils.getLogger().debug("State: Intersted (" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersInterested)));
             
             for (Entry<Integer,Long> entry : dwnloadedBytes.entrySet()) 
             {
                 String pref = preferredNeighIds.contains(entry.getKey()) ? " *" : "";
                 
-                /*LogHelper.getLogger().debug("BYTES DOWNLOADED FROM  PEER " + entry.getKey() + ": "
+                LoggerUtils.getLogger().debug("BYTES DOWNLOADED FROM  PEER " + entry.getKey() + ": "
                         + entry.getValue() + " (INTERESTED PEERS: "
-                        + interestedPeers.size()+ ": " + LogHelper.getPeerIdsAsString (interestedPeers)
-                        + ")\t" + PREFERRED);*/
+                        + peersInterested.size()+ ": " + LoggerUtils.returnPeerIdStringFromObject(peersInterested)
+                        + ")\t" + pref);
             }
-
-            // 5) NOTIFY PROCESS, IT WILL TAKE CARE OF SENDING CHOKE AND UNCHOKE MESSAGES
+            
             for (IPeerManager module : peerManagerModules) 
             {
                 module.chockedPeers(peersChokedIds);
                 module.unchockedPeers(preferredNeighIds);
             }
-            
-            // 6) NOTIFY THE OPTIMISTICALLY UNCHOKER THREAD WITH THE NEW SET OF UNCHOKABLE PEERS
-
-            if (unchokedPeers != null) {
+                        
+            if (unchokedPeers != null) 
+            {
                 unchokerManager.SetChokedPeers(unchokedPeers);
             }
         }

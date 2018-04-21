@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import entities.FileObject;
 import entities.Parts;
+import log.LoggerUtils;
 import utils.ConfigurationReader;
 import utils.ConfigurationReader.ConfigurationParameters;
 
@@ -21,15 +22,9 @@ public class FileManager {
     private final int bsSize;
     private final Parts reqParts;
 
-    public FileManager(int pId, Properties prop) 
-    {
-        this (pId, prop.getProperty (ConfigurationReader.ConfigurationParameters.FileName.toString()),
-                Integer.parseInt(prop.getProperty(ConfigurationReader.ConfigurationParameters.FileSize.toString())), 
-                Integer.parseInt(prop.getProperty(ConfigurationReader.ConfigurationParameters.PieceSize.toString())),
-                Integer.parseInt(prop.getProperty(ConfigurationReader.ConfigurationParameters.UnchokingInterval.toString())) * 1000);
-    }
-
-    
+    /*
+     * Constructor for the File Manager
+     */
     public FileManager(int pId, String fileName, int fSize, int pSize, long ucInterval) 
     {
         this.pSize = pSize;
@@ -40,6 +35,9 @@ public class FileManager {
         fileObj = new FileObject(pId, fileName);
     }
 
+    /*
+     * add parts to the parts file
+     */
     public synchronized void addPart(int ind, byte[] partArr) 
     {        
         final boolean isNew = !rcvParts.get(ind);
@@ -65,60 +63,93 @@ public class FileManager {
         }
     }
 
-    
+    /*
+     * identify the parts that needs to be requested
+     */
     public synchronized int identifyParts(BitSet partsAvl) 
     {
-        partsAvl.andNot(getReceivedParts());
+        partsAvl.andNot(getPartsRcvd());
         return reqParts.identifyParts(partsAvl);
     }
 
-    public synchronized BitSet getReceivedParts () {
-        return (BitSet) rcvParts.clone();
+    /*
+     * Get the parts already received
+     */
+    public synchronized BitSet getPartsRcvd() 
+    {
+        return (BitSet)rcvParts.clone();
     }
 
-    synchronized public boolean hasPart(int pieceIndex) {
+    /*
+     * Returns whether the peer has the piece index or not
+     */
+    synchronized public boolean hasPart(int pieceIndex) 
+    {
         return rcvParts.get(pieceIndex);
     }
 
     public synchronized void setAllParts()
     {
-        for (int i = 0; i < bsSize; i++) {
+        for (int i = 0; i < bsSize; i++)
+        {
             rcvParts.set(i, true);
         }
-        //LogHelper.getLogger().debug("Received parts set to: " + rcvParts.toString());
+        
+        LoggerUtils.getLogger().debug("Received parts set to: " + rcvParts.toString());
     }
 
+    /*
+     * Get the count of the parts received
+     */
     public synchronized int getNumberOfReceivedParts() 
     {
         return rcvParts.cardinality();
     }
 
+    /*
+     * get byte array(payload) of part given it's index
+     */
     public byte[] getPiece(int partInd) 
     {
         byte[] piece = fileObj.getPartsArray(partInd);
         return piece;
     }
 
+    /*
+     * registering the file manager module
+     */
     public void registerModule(IFileManager fmModule) 
     {
         fmModules.add(fmModule);
     }
 
+    /*
+     * split file utility using the piece size
+     */
     public void splitFile()
     {
         fileObj.split((int) pSize);
     }
 
+    /*
+     * array of byte array which includes all the parts
+     */
     public byte[][] getAllPieces()
     {
         return fileObj.getAllParts();
     }
 
+    /*
+     * Return the size of the bitmap
+     */
     public int getBitmapSize() 
     {
         return bsSize;
     }
 
+    /*
+     * If all parts of the file are available, returns isFileCompleted as True
+     */
     private boolean isFileCompleted() 
     {
         for(int i = 0; i < bsSize; i++) 

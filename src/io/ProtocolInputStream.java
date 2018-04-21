@@ -6,23 +6,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 
-public class ProtocolInputStream extends DataInputStream implements ObjectInput{
+/*
+ * Used to Read the data from the input stream and de-serialize it
+ */
+public class ProtocolInputStream extends DataInputStream implements ObjectInput
+{
 	private boolean isHandShakeReceived = false;
 
-    public ProtocolInputStream(InputStream inputStream) {
+	/*
+	 * Constructor of the Protocol Input Stream
+	 */
+    public ProtocolInputStream(InputStream inputStream) 
+    {
         super(inputStream);
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.io.ObjectInput#readObject()
+     */
     @Override
-    public Object readObject() throws ClassNotFoundException, IOException {
-        if (isHandShakeReceived) {
+    public Object readObject() throws ClassNotFoundException, IOException 
+    {
+        if (isHandShakeReceived) 
+        {
             final int length = readInt();
             final int dataLength = length - 1;
             MessageTemplate message = MessageTemplate.returnNewInstance(MessageType.valueOf(readByte()), dataLength);
             message.readData(this);
             return message;
         }
-        else {
+        else 
+        {
             HandShakeMessageTemplate handshake = new HandShakeMessageTemplate();
             handshake.readData(this);
             isHandShakeReceived = true;

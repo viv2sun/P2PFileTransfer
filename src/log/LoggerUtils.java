@@ -17,7 +17,8 @@ import java.util.logging.Logger;
 
 import entities.PeerObject;
 
-public class LoggerUtils {
+public class LoggerUtils 
+{
 
     private static final String logPropFile = "/logger.properties";
     private static final LoggerUtils log = new LoggerUtils(Logger.getLogger("CNT5106C"));
@@ -50,11 +51,17 @@ public class LoggerUtils {
 
     private final Logger logger;
 
+    /*
+     * Constructor of the LoggerUtils
+     */
     private LoggerUtils(Logger logger) 
     {
         this.logger = logger;
     }
 
+    /*
+     * Configure the log for the peer
+     */
     public static void configure(int pId)
             throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException 
     {
@@ -67,11 +74,17 @@ public class LoggerUtils {
         log.logger.addHandler(handler);
     }
 
+    /*
+     * Return the logger
+     */
     public static LoggerUtils getLogger() 
     {
         return log;
     }
 
+    /*
+     * Returns the list of peerIds as a String
+     */
     public static String returnPeerIdString (List<Integer> pIds) 
     {
         StringBuilder sb = new StringBuilder ("");
@@ -92,6 +105,9 @@ public class LoggerUtils {
         return sb.toString();
     }
 
+    /*
+     * Return the list of PeerIds as a string from String Object
+     */
     public static String returnPeerIdStringFromObject(List<PeerObject> peers) 
     {
         StringBuilder sb = new StringBuilder ("");
@@ -112,35 +128,57 @@ public class LoggerUtils {
         return sb.toString();
     }
 
+    /*
+     * configuration log
+     */
     public synchronized void conf(String msg) 
     {
         logger.log(Level.CONFIG, msg);
     }
 
+    /*
+     * Debug log
+     */
     public synchronized void debug(String msg) 
     {
         logger.log(Level.FINE, msg);
     }
 
+    /*
+     * info log
+     */
     public synchronized void info(String msg) 
     {
         logger.log (Level.INFO, msg);
     }
 
+    /*
+     * severe log
+     */
     public synchronized void severe(String msg) 
     {
         logger.log(Level.SEVERE, msg);
     }
 
+    /*
+     * warning log
+     */
     public synchronized void warning(String msg) 
     {
         logger.log(Level.WARNING, msg);
     }
 
-    public synchronized void severe (Throwable e) {
+    /*
+     * severe log
+     */
+    public synchronized void severe (Throwable e) 
+    {
         logger.log(Level.SEVERE, stackTraceToString (e));
     }
 
+    /*
+     * warning log
+     */
     public synchronized void warning (Throwable e) {
         logger.log(Level.WARNING, stackTraceToString (e));
     }

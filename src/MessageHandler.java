@@ -25,7 +25,7 @@ public class MessageHandler
 
     public MessageTemplate handle(HandShakeMessageTemplate handShake) 
     {
-        BitSet bitset = fm.getReceivedParts();
+        BitSet bitset = fm.getPartsRcvd();
         if(!bitset.isEmpty()) 
         {
             return (new BitField(bitset));
@@ -68,7 +68,7 @@ public class MessageHandler
                 logMain.haveMessage(remPeerId, pieceId);
                 pm.hasPartsArrived(remPeerId, pieceId);
 
-                if(fm.getReceivedParts().get(pieceId)) 
+                if(fm.getPartsRcvd().get(pieceId)) 
                 {
                     return new NotInterested();
                 }
@@ -83,7 +83,7 @@ public class MessageHandler
                 BitSet bitset = bitfield.getBitSet();
                 pm.hasBitSetInfoArrived(remPeerId, bitset);
 
-                bitset.andNot(fm.getReceivedParts());
+                bitset.andNot(fm.getPartsRcvd());
                 if (bitset.isEmpty()) 
                 {
                     return new NotInterested();

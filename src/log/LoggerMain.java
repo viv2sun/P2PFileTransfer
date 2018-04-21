@@ -5,81 +5,129 @@ public class LoggerMain
 
     private final LoggerUtils logUtils;
     private final String msg; 
-
-    public LoggerMain(int peerId) 
-    {
-        this (peerId, LoggerUtils.getLogger());
-    }
-
+    
+    /*
+     * Constructor for the logger main
+     */
     public LoggerMain(int pId, LoggerUtils LoggerUtils) 
     {
         msg = ": Peer " + pId;
         logUtils = LoggerUtils;
     }
 
-    public void peerConnection(int peerId, boolean isConnectingPeer) 
+    /*
+     * logger for establishing peer connection
+     */
+    public void establishPeerConnectionLog(int peerId, boolean isConnectingPeer) 
     {
-        final String msg = getLogMsgHeader() + (isConnectingPeer ? " makes a connection to Peer %d." : " is connected from Peer %d.");
-        logUtils.info (String.format (msg, peerId));
+    	String temp = this.msg;
+    	
+    	if(isConnectingPeer) {
+    		temp += " makes a connection to Peer " + peerId + ".";
+    	}
+    	else {
+    		temp += " is connected from Peer " + peerId + ".";
+    	}
+        logUtils.info(temp);
     }
 
-    public void changeOfPrefereedNeighbors(String preferredNeighbors) 
+    /*
+     * logger for the change of the preferred neighbors 
+     */
+    public void preferredNeighborChangeLog(String preferredNeighbors) 
     {
-        final String msg = getLogMsgHeader() + " has preferred neighbors %s";
-        logUtils.info (String.format (msg, preferredNeighbors));
+    	String temp = this.msg;    	
+    	temp += " has preferred neighbors " + preferredNeighbors;
+    	
+        logUtils.info(temp);
     }
 
-    public void changeOfOptimisticallyUnchokedNeighbors(String preferredNeighbors) 
+    /*
+     * logger for the change of the optimistically unchoked neighbors
+     */
+    public void optimisticallyUnchokedNeighborsChangeLog(String preferredNeighbors) 
     {
-        final String msg = getLogMsgHeader() + " has the optimistically unchoked neighbor %s";
-        logUtils.info (String.format (msg, preferredNeighbors));
+    	String temp = this.msg;    	
+    	temp += " has the optimistically unchoked neighbor " + preferredNeighbors;
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the choke message
+     */
     public void chokeMessage(int peerId) 
     {
-        final String msg = getLogMsgHeader() + " is choked by %d.";
-        logUtils.info (String.format (msg, peerId));
+    	String temp = this.msg;    	
+    	temp += " is choked by " + peerId +".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the unchoke message
+     */
     public void unchokeMessage(int peerId) 
     {
-        final String msg = getLogMsgHeader() + " is unchoked by %d.";
-        logUtils.info (String.format (msg, peerId));
+    	String temp = msg;    	
+    	temp += " is unchoked by " + peerId +".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the have message
+     */
     public void haveMessage (int peerId, int pieceIdx) 
     {
-        final String msg = getLogMsgHeader() + " received the 'have' message from %d for the piece %d.";
-        logUtils.info (String.format (msg, peerId, pieceIdx));
+    	String temp = msg;    	
+    	temp += " received the 'have' message from " + peerId +" for the piece " + pieceIdx + ".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the interested message
+     */
     public void interestedMessage(int peerId) 
     {
-        final String msg = getLogMsgHeader() + " received the 'interested' message from %d.";
-        logUtils.info (String.format (msg, peerId));
+    	String temp = msg;
+    	temp += " received the 'interested' message from " + peerId + ".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the not interested message
+     */
     public void notInterestedMessage(int peerId) 
     {
-        final String msg = getLogMsgHeader() + " received the 'not interested' message from %d.";
-        logUtils.info (String.format (msg, peerId));
+    	String temp = msg;
+    	temp += " received the 'not interested' message from " + peerId + ".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * logger for the piece downloaded message
+     */
     public void pieceDownloadedMessage(int peerId, int pieceIdx, int currNumberOfPieces) 
     {
-        final String msg = getLogMsgHeader() + " has downloaded the piece %d from peer %d. Now the number of pieces it has is %d.";
-        logUtils.info (String.format (msg, pieceIdx, peerId, currNumberOfPieces));
+    	String temp = msg;
+    	temp += " has downloaded the piece " + pieceIdx + " from peer " + peerId + ". Now the number of pieces it has is " + currNumberOfPieces + ".";
+    	
+        logUtils.info(temp);
     }
 
+    /*
+     * Logger for the file downloaded message
+     */
     public void fileDownloadedMessage() 
     {
-        final String msg = getLogMsgHeader() + " has downloaded the complete file.";
-        logUtils.info (String.format (msg));
-    }
-
-    private String getLogMsgHeader() 
-    {
-        return (String.format (msg));
+    	String temp = msg;
+    	temp += " has downloaded the complete file.";
+    	
+        logUtils.info(temp);
     }
 
 }

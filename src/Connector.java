@@ -29,11 +29,17 @@ public class Connector implements Runnable {
     private final AtomicInteger remPeerId;
     private final BlockingQueue<MessageTemplate> q = new LinkedBlockingQueue<>();
     
+    /*
+     * Connector Constructor
+     */
 	public Connector(int id, Socket s, FileManager fm, PeerManager pm) throws IOException 
 	{
 	     this(id, false, -1, s, fm, pm);
 	}
 	
+	/*
+	 * Constructor for the connector class
+	 */
 	public Connector(int id, boolean isConnected, int expectedPeerId,Socket socket, FileManager fm, PeerManager pm) 
 			throws IOException 
 	{
@@ -47,6 +53,9 @@ public class Connector implements Runnable {
 		this.remPeerId = new AtomicInteger(PEER_NOT_SET);
 	}
 	
+	/*
+	 * Get the id of the remote peer
+	 */
 	public int getPeerId() 
 	{
 		return remPeerId.get();
@@ -104,8 +113,10 @@ public class Connector implements Runnable {
                             }
                         } else 
                         {
-                            LoggerUtils.getLogger().debug("cannot send message of type "
-                                    + message.type + " because the remote peer has not handshaked yet.");
+                        	String msg = "Message Type ";
+                            msg += message.type + " cannot be sent, because there is no handshake from the remote peer";
+                        	
+                            LoggerUtils.getLogger().debug(msg);
                         }
                     } 
                     catch(IOException ex) 
@@ -129,7 +140,7 @@ public class Connector implements Runnable {
             remPeerId.set(rcvdHandshake.returnPeerId());
             
             Thread.currentThread().setName(getClass().getName() + "-" + remPeerId.get());
-            final LoggerMain LoggerMain = new LoggerMain(locPeerId);
+            final LoggerMain LoggerMain = new LoggerMain(locPeerId, LoggerUtils.getLogger());
             final MessageHandler msgHandler = new MessageHandler(remPeerId.get(), fm, pm, LoggerMain);
             if (isConnected && (remPeerId.get() != expRemPId)) 
             {
@@ -137,7 +148,7 @@ public class Connector implements Runnable {
             }
 
             // Handshake successful
-            LoggerMain.peerConnection(remPeerId.get(), isConnected);
+            LoggerMain.establishPeerConnectionLog(remPeerId.get(), isConnected);
 
             sendInternal(msgHandler.handle(rcvdHandshake));
             while(true) 
@@ -166,8 +177,11 @@ public class Connector implements Runnable {
             catch (Exception e) 
             {	}
         }
-        LoggerUtils.getLogger().warning(Thread.currentThread().getName()
-                + " terminating, messages will no longer be accepted.");
+        
+        String warningMsg = Thread.currentThread().getName();
+        warningMsg += " terminating, messages will no longer be accepted.";
+        
+        LoggerUtils.getLogger().warning(warningMsg);
     }
 
     @Override
@@ -200,7 +214,7 @@ public class Connector implements Runnable {
         {
             out.writeObject(msg);
             
-            switch(msg.getType()) 
+            switch(msg.type) 
             {
                 case Request: 
                 {
