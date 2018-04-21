@@ -2,23 +2,40 @@ package entities.message_entities;
 
 import java.util.Arrays;
 
-public class Piece extends MessageTemplate{
+public class Piece extends MessageTemplate
+{
 
-    public Piece(int pieceIndex, byte[] data) {
+	/*
+	 * Constructor of the Piece Class
+	 */
+    public Piece(int pieceIndex, byte[] data) 
+    {
         super (MessageType.Piece, combinePieceIndexAndData(data, pieceIndex));
     }
     
-	public Piece(byte[] payload) {
+    /*
+     * Constructor for Piece without piece index
+     */
+	public Piece(byte[] payload) 
+	{
         super(MessageType.Piece, payload);
     }
 
-    public byte[] getData() {
+	/*
+	 * return payload data without the piece index
+	 */
+    public byte[] getData() 
+    {
         if(payload != null && payload.length > 4)
         	return Arrays.copyOfRange(payload, 4, payload.length);
         return null;
     }
 
-    private static byte[] combinePieceIndexAndData(byte[] data, int pieceIndex) {
+    /*
+     * Combine the pieceIndex and the data and return it
+     */
+    public static byte[] combinePieceIndexAndData(byte[] data, int pieceIndex) 
+    {
     	int length = 4 + ((data != null) ? data.length : 0);
         byte[] wholeContent = new byte[length];
         byte[] pieceIndexArray = getPieceIndexByteArray(pieceIndex);

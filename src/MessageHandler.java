@@ -35,7 +35,7 @@ public class MessageHandler
 
     public MessageTemplate handle(MessageTemplate msg) 
     {
-        switch(msg.getType()) 
+        switch(msg.type) 
         {
             case Choke: 
             {

@@ -1,12 +1,20 @@
 package entities.message_entities;
 
-public class Have extends MessageTemplate{
-	
-	public Have(byte[] pieceIndex) {
+public class Have extends MessageTemplate
+{
+	/*
+	 * Constructor of the have message with the pieceIndex as the payload
+	 */
+	public Have(byte[] pieceIndex) 
+	{
         super(MessageType.Have, pieceIndex);
     }
 
-    public Have(int pieceIndex) {
+	/*
+	 * Constructor of the Have message with int as the parameter
+	 */
+    public Have(int pieceIndex) 
+    {
         this(getPieceIndexByteArray(pieceIndex));
     }
 }

@@ -11,31 +11,45 @@ import java.util.Arrays;
 
 import io.ProtocolSerializable;
 
-public class HandShakeMessageTemplate implements ProtocolSerializable{
+public class HandShakeMessageTemplate implements ProtocolSerializable
+{
 	
 	private final String protocolName = "P2PFILESHARINGPROJ";
     private final byte[] zeroBits = new byte[10];
     private byte[] peerId = new byte[4];
 
-    private HandShakeMessageTemplate(byte[] peerId) {
-        if (peerId.length <= 4) {
-        	this.peerId = peerId;
-        }
-        else {
-        	throw new ArrayIndexOutOfBoundsException("The max length of peerID is 4. The length is: " + peerId.length);
-        }
+    /*
+     * Constructor of HandShake assigning only PeerId
+     */
+    private HandShakeMessageTemplate(byte[] peerId) 
+    {
+        this.peerId = peerId;
     }
     
-    public HandShakeMessageTemplate(int peerId) {
+    /*
+     * Constructor returning the byte array of peerId
+     */
+    public HandShakeMessageTemplate(int peerId) 
+    {
         this(ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN).putInt(peerId).array());
     }
     
-    public HandShakeMessageTemplate() {
+    /*
+     * Default Constructor
+     */
+    public HandShakeMessageTemplate() 
+    {
     	
     }
 
+    /*
+     * (non-Javadoc)
+     * @see io.ProtocolSerializable#readData(java.io.DataInputStream)
+     * Reading the protocol name, zero bits and peerId from the input stream
+     */
     @Override
-    public void readData(DataInputStream inputStream) throws IOException {
+    public void readData(DataInputStream inputStream) throws IOException 
+    {
         // Read and check protocol Id
         byte[] protocolName = new byte[this.protocolName.length()];
         int protocolNameLength = inputStream.read(protocolName, 0, this.protocolName.length());
@@ -53,8 +67,14 @@ public class HandShakeMessageTemplate implements ProtocolSerializable{
         }
     }    
 
+    /*
+     * (non-Javadoc)
+     * @see io.ProtocolSerializable#writeData(java.io.DataOutputStream)
+     * Write the protocol name, zero bits and the peerId in the output stream
+     */
     @Override
-    public void writeData(DataOutputStream outputStream) throws IOException {
+    public void writeData(DataOutputStream outputStream) throws IOException 
+    {
     	
         byte[] protocolNameArray = this.protocolName.getBytes(Charset.forName("US-ASCII"));
         
@@ -63,7 +83,11 @@ public class HandShakeMessageTemplate implements ProtocolSerializable{
         outputStream.write(peerId, 0, peerId.length);
     }
 
-    public int returnPeerId() {
+    /*
+     * Returns the peer Id as int from the byte array
+     */
+    public int returnPeerId() 
+    {
     	ByteBuffer temp = ByteBuffer.wrap(this.peerId);
     	temp.order(ByteOrder.BIG_ENDIAN);
         return temp.getInt();

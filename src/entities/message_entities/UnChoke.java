@@ -1,8 +1,13 @@
 package entities.message_entities;
 
-public class UnChoke extends MessageTemplate{
+public class UnChoke extends MessageTemplate
+{
 
-	public UnChoke() {
-		super(MessageType.Unchoke);
+	/*
+	 * Constructor for unchoke, with the payload as null
+	 */
+	public UnChoke() 
+	{
+		super(MessageType.Unchoke, null);
 	}
 }

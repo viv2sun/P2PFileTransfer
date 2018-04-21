@@ -1,8 +1,14 @@
 package entities.message_entities;
 
-public class Choke extends MessageTemplate{
+public class Choke extends MessageTemplate
+{
 
-	public Choke() {
-		super(MessageType.Choke);
+	/*
+	 * Constructor of Choke
+	 */
+	public Choke() 
+	{
+		//Choke does not have any payload, hence passing it null
+		super(MessageType.Choke, null);
 	}
 }

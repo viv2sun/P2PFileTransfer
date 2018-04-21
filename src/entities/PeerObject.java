@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PeerObject {
+public class PeerObject 
+{
+	
 	private final int id;
     private final String address;
     private final int port;
@@ -17,10 +19,17 @@ public class PeerObject {
     public BitSet rcvParts;
     private final AtomicBoolean interested;
     
-    public PeerObject(int id) {
-        this (id, "127.0.0.1", 0, 0);
+    /*
+     * Constructor of the Peer Object
+     */
+    public PeerObject(int id) 
+    {
+        this (id, "127.0.0.3", 0, 0);
     }
 
+    /*
+     * Parameterized constructor of the peer object
+     */
     public PeerObject(int id, String address, int port, int hasFile) {
         this.id = id;
         this.address = address;
@@ -31,40 +40,65 @@ public class PeerObject {
         this.interested = new AtomicBoolean (false);
     }
 
-	public int getId() {
+    /*
+     * Returns the PeerId
+     */
+	public int getId() 
+	{
 		return id;
 	}
 
-	public String getAddress() {
+	/*
+	 * Returns the IP address of the peer
+	 */
+	public String getAddress() 
+	{
 		return address;
 	}
 
-	public int getPort() {
+	/*
+	 * Returns the port number of the peer
+	 */
+	public int getPort() 
+	{
 		return port;
 	}
 
-	public boolean hasFile() {
+	/*
+	 * returns whether the peer contains the file or not
+	 */
+	public boolean hasFile() 
+	{
 		return (hasFile == 1);
 	}
 
-	public boolean getInterested() {
+	/*
+	 * returns the interested flag
+	 */
+	public boolean getInterested() 
+	{
 		return interested.get();
 	}
 	
-	public void setInterestedFlag(boolean flag) {
+	/*
+	 * Sets the interested flag to a value
+	 */
+	public void setInterestedFlag(boolean flag) 
+	{
         interested.set(flag);
     }
 	
 	@Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o) 
+	{
+		PeerObject obj = (PeerObject)o;
 		
-        if (o == null) return false;
-        
-        if (o instanceof PeerObject) {
-            return ((PeerObject) o).getId() == this.id;
+        if (obj == null) 
+        {
+        	return false;
         }
         
-        return false;
+        return obj.getId() == this.id;
     }
 
 	/*
@@ -72,8 +106,9 @@ public class PeerObject {
 	 * @see java.lang.Object#hashCode()
 	 */
     @Override
-    public int hashCode() {
-        return Objects.hashCode(Integer.toString(id));
+    public int hashCode() 
+    {
+        return this.id;
     }
 
     /*
@@ -83,14 +118,15 @@ public class PeerObject {
     @Override
     public String toString() {
     	StringBuilder temp = new StringBuilder();
-    	temp.append("Id-").append(id).append(" Address-").append(address).append(" Port-").append(port);
+    	temp.append("PeerId-").append(id).append(" Address-").append(address).append(" Port-").append(port);
         return temp.toString();
     }
 
     /*
-     * 
+     * Returns the set of Peer Ids
      */
-    public static Set<Integer> getPeerIds (Collection<PeerObject> peers) {
+    public static Set<Integer> getPeerIds (Collection<PeerObject> peers) 
+    {
         Set<Integer> ids = new HashSet<>();
         for (PeerObject peer : peers) {
             ids.add(peer.getId());

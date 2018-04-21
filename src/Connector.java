@@ -76,7 +76,7 @@ public class Connector implements Runnable {
                         
                         if(remPeerId.get() != PEER_NOT_SET) 
                         {
-                            switch (message.getType()) 
+                            switch (message.type) 
                             {
                                 case Choke: 
                                 {
@@ -105,7 +105,7 @@ public class Connector implements Runnable {
                         } else 
                         {
                             LoggerUtils.getLogger().debug("cannot send message of type "
-                                    + message.getType() + " because the remote peer has not handshaked yet.");
+                                    + message.type + " because the remote peer has not handshaked yet.");
                         }
                     } 
                     catch(IOException ex) 

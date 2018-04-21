@@ -1,7 +1,8 @@
 package entities.message_entities;
 
 
-public enum MessageType {
+public enum MessageType 
+{
     Choke((byte) 0),
     Unchoke((byte) 1),
     Interested((byte) 2),
@@ -11,19 +12,25 @@ public enum MessageType {
     Request((byte) 6),
     Piece((byte) 7);
 
-    private final byte type;
+    public final byte type;
     
-    MessageType(byte type) {
+    /*
+     * Constructor of MessageType
+     */
+    MessageType(byte type) 
+    {
         this.type = type;
     }
 
-    public byte value() {
-        return this.type;
-    }
-
-    public static MessageType valueOf(byte b) {
-        for (MessageType t : MessageType.values()) {
-            if (t.type == b) {
+    /*
+     * value of message type based on the number that is passed
+     */
+    public static MessageType valueOf(byte b) 
+    {
+        for (MessageType t : MessageType.values()) 
+        {
+            if (t.type == b) 
+            {
                 return t;
             }
         }

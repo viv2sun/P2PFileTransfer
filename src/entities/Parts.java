@@ -2,19 +2,27 @@ package entities;
 
 import java.util.BitSet;
 
+import log.LoggerUtils;
 import utils.ConfigurationReader;
 
 public class Parts 
 {
+	
     private final BitSet partsReq;
     private final long timeout;
 
+    /*
+     * Constructor of Parts
+     */
     public Parts(int parts, long interval) 
     {
         partsReq = new BitSet(parts);
         timeout = interval * 2;
     }
 
+    /*
+     * identitying the parts that is requested and return the part id if found, else return -1
+     */
     public synchronized int identifyParts(BitSet partsCanBeRequested) 
     {
         partsCanBeRequested.andNot(this.partsReq);
@@ -33,7 +41,7 @@ public class Parts
                         synchronized (partsReq) 
                         {
                             partsReq.clear(partId);
-                            //LogHelper.getLogger().debug("clearing requested parts for pert " + partId);
+                            LoggerUtils.getLogger().debug("The parts requested is cleared for " + partId);
                         }
                     }
                 }, 

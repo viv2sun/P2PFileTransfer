@@ -2,17 +2,30 @@ package entities.message_entities;
 
 import java.util.BitSet;
 
-public class BitField extends MessageTemplate{
+public class BitField extends MessageTemplate
+{
 	
-	public BitField(byte[] bitfield) {
+	/*
+	 * Constructor
+	 */
+	public BitField(byte[] bitfield) 
+	{
         super(MessageType.BitField, bitfield);
     }
 
-    public BitField(BitSet bitset) {
+	/*
+	 * Constructor
+	 */
+    public BitField(BitSet bitset) 
+    {
         super(MessageType.BitField, bitset.toByteArray());
     }
 
-    public BitSet getBitSet() {
+    /*
+     * Getting the payload(byte array) of the bitfield as the BitSet
+     */
+    public BitSet getBitSet() 
+    {
         return BitSet.valueOf(payload);
     }
 }

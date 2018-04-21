@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import manager.*;
 import io.ProtocolObjectOutputStream;
+import log.LoggerUtils;
 
 public class TimerEntity extends TimerTask
 {
@@ -15,6 +16,9 @@ public class TimerEntity extends TimerTask
     private final int remPId;
     private final MessageTemplate msg;
 
+    /*
+     * Constructor of the timer entity
+     */
     public TimerEntity(Request req, FileManager fm, ProtocolObjectOutputStream out, MessageTemplate msg, int remPId) 
     {
         super();
@@ -25,18 +29,20 @@ public class TimerEntity extends TimerTask
         this.msg = msg;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.util.TimerTask#run()
+     */
     @Override
     public void run() 
     {
         if(fm.hasPart(req.getPieceIndex())) 
         {
-            /*LogHelper.getLogger().debug("Not rerequesting piece " + req.getPieceIndex()
-                    + " to peer " + remPId);*/
+            LoggerUtils.getLogger().debug("No re-request for piece: " + req.getPieceIndex() + " to peer " + remPId);
         }
         else 
         {
-            /*LogHelper.getLogger().debug("Rerequesting piece " + req.getPieceIndex()
-                    + " to peer " + remPId);*/
+            LoggerUtils.getLogger().debug("Re-request for piece " + req.getPieceIndex() + " to peer " + remPId);
             try 
             {
                 out.writeObject(msg);
