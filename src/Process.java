@@ -56,7 +56,7 @@ public class Process implements Runnable, IFileManager, IPeerManager
 		ArrayList<PeerObject> peerList = new ArrayList<>(list);
 		for(PeerObject peer : peerList) {
 			if(peer.getId()== id) {
-				list.remove(id);
+				peerList.remove(peer);
 				break;
 				//check what's happening here. Being added in peerProcess and getting removed here for no reason.
 			}

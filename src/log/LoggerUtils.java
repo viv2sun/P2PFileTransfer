@@ -20,7 +20,7 @@ import entities.PeerObject;
 public class LoggerUtils 
 {
 
-    private static final String logPropFile = "/logger.properties";
+    private static final String logPropFile = "/log/logger.properties";
     private static final LoggerUtils log = new LoggerUtils(Logger.getLogger("CNT5106C"));
     
     static 

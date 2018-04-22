@@ -381,7 +381,7 @@ public class PeerManager implements Runnable
 
             // debug
             LoggerUtils.getLogger().debug("State: Unchoked (" + this.maxNumberOfNeighbors + "):" + LoggerUtils.returnPeerIdString(new ArrayList(preferredNeighIds)));
-            LoggerUtils.getLogger().debug("State: Choked:" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersChokedIds)));
+            LoggerUtils.getLogger().debug("State: Choked:" + LoggerUtils.returnPeerIdString(new ArrayList(peersChokedIds)));
            LoggerUtils.getLogger().debug("State: Intersted (" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersInterested)));
             
             for (Entry<Integer,Long> entry : dwnloadedBytes.entrySet()) 

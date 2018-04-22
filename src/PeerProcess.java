@@ -25,8 +25,7 @@ public class PeerProcess
 		
 		int pId = Integer.parseInt(args[0]);
 		
-	    // configure the peer 
-
+	    // configure the peer
         LoggerUtils.configure(pId);
 		String hostAddress = "localhost";
 		int portNumber = 6008;
