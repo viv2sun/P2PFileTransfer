@@ -39,7 +39,7 @@ public class MessageTemplate implements ProtocolSerializable
     {
     	if (payload != null && payload.length > 0) 
         {
-    		in.readFully(payload, 0, length);
+    		in.readFully(payload, 0, payload.length);
         }
     }
 
