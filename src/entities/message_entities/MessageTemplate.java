@@ -52,12 +52,12 @@ public class MessageTemplate implements ProtocolSerializable
     @Override
     public void writeData(DataOutputStream out) throws IOException 
     {
-        out.writeInt (this.length);
-        out.writeByte (this.type.type);
+        out.writeInt(this.length);
+        out.writeByte(this.type.type);
         
         if (payload != null && payload.length > 0) 
         {
-            out.write (payload, 0, length);
+            out.write(payload, 0, payload.length);
         }
     }
     
