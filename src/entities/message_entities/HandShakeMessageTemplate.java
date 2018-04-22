@@ -56,7 +56,7 @@ public class HandShakeMessageTemplate implements ProtocolSerializable
         int zeroBitsLength = inputStream.read(zeroBits, 0,  zeroBits.length);
         int peerIdLength = inputStream.read(peerId, 0, peerId.length);
         
-        if(!protocolName.equals(this.protocolName))
+        if(!this.protocolName.equals(new String(protocolName, "US-ASCII")))
         	throw new ProtocolException("Invalid Protocol Name: " + protocolName);
         
         if (zeroBitsLength < zeroBits.length)
