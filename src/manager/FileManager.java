@@ -29,7 +29,7 @@ public class FileManager {
     {
         this.pSize = pSize;
         bsSize = (int) Math.ceil (fSize/pSize);
-        //LogHelper.getLogger().debug ("File size set to " + fSize +  "\tPart size set to " + pSize + "\tBitset size set to " + bsSize);
+        LoggerUtils.getLogger().debug ("File size set to " + fSize +  "\tPart size set to " + pSize + "\tBitset size set to " + bsSize);
         rcvParts = new BitSet(bsSize);
         reqParts = new Parts(bsSize, ucInterval);
         fileObj = new FileObject(pId, fileName);

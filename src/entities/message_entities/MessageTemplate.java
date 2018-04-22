@@ -66,7 +66,7 @@ public class MessageTemplate implements ProtocolSerializable
      */
     public int getPieceIndex() 
     {
-    	ByteBuffer temp = ByteBuffer.wrap(payload, 0, 4);
+    	ByteBuffer temp = ByteBuffer.wrap(Arrays.copyOfRange(payload, 0, 4));
     	temp = temp.order(ByteOrder.BIG_ENDIAN);
         return temp.getInt();
     }
