@@ -54,7 +54,7 @@ public class ConfigurationReader
 	{
         if (bitset.isEmpty()) 
         {
-            throw new RuntimeException ("The bitset is empty, cannot find a set element");
+            throw new RuntimeException ("Empty bitset, cannot find a set element");
         }
         
         String set = bitset.toString();

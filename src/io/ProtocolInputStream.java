@@ -11,7 +11,7 @@ import java.io.ObjectInput;
  */
 public class ProtocolInputStream extends DataInputStream implements ObjectInput
 {
-	private boolean isHandShakeReceived = false;
+	private boolean isHSSignalReceived = false;
 
 	/*
 	 * Constructor of the Protocol Input Stream
@@ -28,10 +28,10 @@ public class ProtocolInputStream extends DataInputStream implements ObjectInput
     @Override
     public Object readObject() throws ClassNotFoundException, IOException 
     {
-        if (isHandShakeReceived) 
+        if (isHSSignalReceived) 
         {
-            final int length = readInt();
-            final int dataLength = length - 1;
+            final int len = readInt();
+            final int dataLength = len - 1;
             MessageTemplate message = MessageTemplate.returnNewInstance(MessageType.valueOf(readByte()), dataLength);
             message.readData(this);
             return message;
@@ -40,7 +40,7 @@ public class ProtocolInputStream extends DataInputStream implements ObjectInput
         {
             HandShakeMessageTemplate handshake = new HandShakeMessageTemplate();
             handshake.readData(this);
-            isHandShakeReceived = true;
+            isHSSignalReceived = true;
             return handshake;
         }
     }

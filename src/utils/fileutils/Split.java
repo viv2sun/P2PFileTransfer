@@ -40,7 +40,7 @@ public class Split
 	                fileSize = fileSize - read;
 	                assert (read == bytePart.length);
 	                totalChunks++;
-	                newFile = inFile.getParent() + "/parts/" + inFile.getName() + "/" + Integer.toString(totalChunks - 1);
+	                newFile = inFile.getParent() + "/pieces/" + inFile.getName() + "/" + Integer.toString(totalChunks - 1);
 	                fos = new FileOutputStream(new File(newFile));
 	                fos.write(bytePart);
 	                fos.flush();

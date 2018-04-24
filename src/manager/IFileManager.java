@@ -2,6 +2,7 @@ package manager;
 
 
 public interface IFileManager 
+
 {
 
 	//Method to determine whether the file is completed (whether the peer has all the parts of the file)

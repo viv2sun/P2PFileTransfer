@@ -15,7 +15,7 @@ public class FileObject
 
     public File file;
     public File partsFolder;
-    public static String partsLoc = "files/parts/";
+    public static String partsLoc = "files/pieces/";
 
     /*
      * Constructor of the FileObject with the peerId and the file
@@ -25,7 +25,7 @@ public class FileObject
     	//Creating the parts file inside the parts folder
         partsFolder = new File("./peer_" +pId+ "/" +partsLoc+ file);
         partsFolder.mkdirs();
-        this.file = new File(partsFolder.getParent() + "/../" + file);
+        this.file = new File(this.partsFolder.getParent() + "/../" + file);
     }
 
     /*
@@ -34,7 +34,7 @@ public class FileObject
     public byte[][] getAllParts()
     {
     	//Lists file inside the parts folder
-        File[] files = partsFolder.listFiles(new FilenameFilter() 
+        File[] files = this.partsFolder.listFiles(new FilenameFilter() 
         {
             @Override
             public boolean accept(File dir, String name) {
@@ -59,7 +59,7 @@ public class FileObject
     public byte[] getPartsArray(int part) 
     {
     	//get the file
-        File file = new File(partsFolder.getAbsolutePath() + "/" + part);
+        File file = new File(this.partsFolder.getAbsolutePath() + "/" + part);
         
         //return the byte array of the parts file
         return getByteArray(file);
@@ -71,7 +71,7 @@ public class FileObject
     public void WriteArrayAsParts(byte[] arr, int id)
     {
         FileOutputStream fos;
-        File ofile = new File(partsFolder.getAbsolutePath() + "/" + id);
+        File ofile = new File(this.partsFolder.getAbsolutePath() + "/" + id);
         try 
         {
             fos = new FileOutputStream(ofile);
@@ -99,6 +99,7 @@ public class FileObject
         {
         	//read the file
             fis = new FileInputStream(file);
+            System.out.println("File length: reading  File Object " + (int) file.length());
             
             //create a byte array equal to the file length
             byte[] fileBytes = new byte[(int) file.length()];
@@ -137,7 +138,7 @@ public class FileObject
     public void split(int size)
     {
         Split.split(this.file, size);
-        LoggerUtils.getLogger().debug("The file is Split");
+        LoggerUtils.getLogger().debug("The file is split");
     }
 
     /*
@@ -145,7 +146,7 @@ public class FileObject
      */
     public void mergeFile(int numParts) 
     {
-        Merge.merge(this.file, this.partsFolder, numParts);
+        Merge.merge(this.file, this.partsFolder, numParts);//already this.partsFolder
     }
 
 }

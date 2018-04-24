@@ -28,7 +28,10 @@ public class FileManager {
     public FileManager(int pId, String fileName, int fSize, int pSize, long ucInterval) 
     {
         this.pSize = pSize;
-        bsSize = (int) Math.ceil (fSize/pSize);
+//        System.out.println(fSize + "is the file size");
+//        System.out.println(pSize + "is the piece size");
+//        System.out.println((fSize/pSize));
+        bsSize = (int) Math.ceil (((double)fSize)/pSize);
         LoggerUtils.getLogger().debug ("File size set to " + fSize +  "\tPart size set to " + pSize + "\tBitset size set to " + bsSize);
         rcvParts = new BitSet(bsSize);
         reqParts = new Parts(bsSize, ucInterval);
@@ -90,8 +93,10 @@ public class FileManager {
 
     public synchronized void setAllParts()
     {
+    	System.out.println("Inside setAllParts:  "+bsSize+" is the total bit set size");
         for (int i = 0; i < bsSize; i++)
         {
+        
             rcvParts.set(i, true);
         }
         
@@ -152,8 +157,10 @@ public class FileManager {
      */
     private boolean isFileCompleted() 
     {
+    	
         for(int i = 0; i < bsSize; i++) 
         {
+        	LoggerUtils.getLogger().info("part:" + i +  " Corresponding BitSet: " + rcvParts.get(i));
             if(!rcvParts.get(i)) 
             {
                 return false;

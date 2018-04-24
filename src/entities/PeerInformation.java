@@ -21,11 +21,11 @@ public class PeerInformation
         BufferedReader in = new BufferedReader(reader);
         
         String line = in.readLine();
-        
+//        System.out.println(line);
         while(line != null) {
         	
         	String[] words = line.trim().split(" ");
-        	
+//        	System.out.println(words[0].trim());
         	int id = Integer.parseInt(words[0].trim());
         	String address = words[1].trim();
         	int port = Integer.parseInt(words[2].trim());

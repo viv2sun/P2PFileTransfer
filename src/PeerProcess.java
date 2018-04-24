@@ -1,5 +1,10 @@
 import java.io.FileReader;
 import java.io.Reader;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,10 +19,16 @@ public class PeerProcess
 {
 	public static void main(String[] args) throws Exception 
 	{
+		String path = System.getProperty("user.dir");
+		Properties config = ConfigurationReader.readConfigFile
+							(new FileReader(ConfigurationReader.CONFIGURATION_FILE));
+		String fileName= config.getProperty (ConfigurationReader.ConfigurationParameters.FileName.toString());
+		
+		Path from = Paths.get(path+"/"+fileName);
 		if(args.length < 1) 
 		{
-			String msg = "the number of arguments passed to the program is " + args.length;
-			msg +=  " while it should be 1.\nUsage: java peerProcess peerId";
+			String msg = "The no. of arguments passed to the program should be 1 but is " + args.length;
+			msg +=  " . \nPlease run the program using 'java peerProcess peerId'";
 			
 		    // Use logger and and log this as type severe, which in-turns
 			LoggerUtils.getLogger().severe(msg);
@@ -25,11 +36,13 @@ public class PeerProcess
 		
 		int pId = Integer.parseInt(args[0]);
 		
-	    // configure the peer
+	    // configuring peer
         LoggerUtils.configure(pId);
 		String hostAddress = "localhost";
 		int portNumber = 6008;
 		boolean hasFile = false;
+		
+		
 		
         List<PeerObject> pList = new LinkedList<>();
         PeerInformation pInfo = new PeerInformation();
@@ -49,6 +62,7 @@ public class PeerProcess
 	        		hostAddress = pObj.getAddress();
 	        		portNumber = pObj.getPort();
 	        		hasFile = pObj.hasFile();
+	        		
 	        		break;
 	                // break is to make sure for loop ends once the peer is done connecting 
 	        	    // to all peers before it
@@ -79,7 +93,20 @@ public class PeerProcess
         	}
         }
         
+      //copy files if it has last column 1 in PeerInfo.cfg
+//  		 if(hasFile)
+//  	        {
+//  	        	//first copy the file here.
+////  	        	System.out.println(path+"/"+fileName+"\t to------->"+ path+"/peer_"+pId);
+//  	        	Path to = Paths.get(path+"/peer_"+pId+"/files/"+fileName);
+//  	        	System.out.println("copied the files here:" + pId);
+//  				Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
+//  	        	
+//  	        	
+//  	        }
         Process process = new Process(pId, hostAddress, portNumber, hasFile, pInfo.getPeerList());
+       
+        
         process.init();
         Thread t = new Thread(process);
         t.start();

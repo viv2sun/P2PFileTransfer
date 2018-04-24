@@ -37,7 +37,7 @@ public class LoggerMain
     public void preferredNeighborChangeLog(String preferredNeighbors) 
     {
     	String temp = this.msg;    	
-    	temp += " has preferred neighbors " + preferredNeighbors;
+    	temp = " The preferred neighbors of " + temp + " are: " + preferredNeighbors;
     	
         logUtils.info(temp);
     }
@@ -48,7 +48,7 @@ public class LoggerMain
     public void optimisticallyUnchokedNeighborsChangeLog(String preferredNeighbors) 
     {
     	String temp = this.msg;    	
-    	temp += " has the optimistically unchoked neighbor " + preferredNeighbors;
+    	temp = "The optimistically unchoked neighbor of " + temp + ": " + preferredNeighbors;
     	
         logUtils.info(temp);
     }
@@ -114,7 +114,7 @@ public class LoggerMain
     public void pieceDownloadedMessage(int peerId, int pieceIdx, int currNumberOfPieces) 
     {
     	String temp = msg;
-    	temp += " has downloaded the piece " + pieceIdx + " from peer " + peerId + ". Now the number of pieces it has is " + currNumberOfPieces + ".";
+    	temp =  pieceIdx + "has been downloaded by" + temp+" from peer " + peerId + " Now the number of pieces it has is " + currNumberOfPieces + ".";
     	
         logUtils.info(temp);
     }
@@ -125,7 +125,7 @@ public class LoggerMain
     public void fileDownloadedMessage() 
     {
     	String temp = msg;
-    	temp += " has downloaded the complete file.";
+    	temp = "Download completed for"+temp;
     	
         logUtils.info(temp);
     }

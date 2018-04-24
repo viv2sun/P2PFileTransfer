@@ -379,17 +379,17 @@ public class PeerManager implements Runnable
                 preferredNeighIds.addAll (PeerObject.getPeerIds(preferredSetOfPeers));
             }
 
-            // debug
-            LoggerUtils.getLogger().debug("State: Unchoked (" + this.maxNumberOfNeighbors + "):" + LoggerUtils.returnPeerIdString(new ArrayList(preferredNeighIds)));
-            LoggerUtils.getLogger().debug("State: Choked:" + LoggerUtils.returnPeerIdString(new ArrayList(peersChokedIds)));
-           LoggerUtils.getLogger().debug("State: Intersted (" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersInterested)));
+            
+            LoggerUtils.getLogger().debug("State- Unchoked (" + this.maxNumberOfNeighbors + "):" + LoggerUtils.returnPeerIdString(new ArrayList(preferredNeighIds)));
+            LoggerUtils.getLogger().debug("State - Choked:" + LoggerUtils.returnPeerIdString(new ArrayList(peersChokedIds)));
+           LoggerUtils.getLogger().debug("State - Intersted (" + LoggerUtils.returnPeerIdStringFromObject(new ArrayList(peersInterested)));
             
             for (Entry<Integer,Long> entry : dwnloadedBytes.entrySet()) 
             {
                 String pref = preferredNeighIds.contains(entry.getKey()) ? " *" : "";
                 
-                LoggerUtils.getLogger().debug("BYTES DOWNLOADED FROM  PEER " + entry.getKey() + ": "
-                        + entry.getValue() + " (INTERESTED PEERS: "
+                LoggerUtils.getLogger().debug("Bytes downloaded (from Peer) : " + entry.getKey() + ": "
+                        + entry.getValue() + " (Interested Peers are: "
                         + peersInterested.size()+ ": " + LoggerUtils.returnPeerIdStringFromObject(peersInterested)
                         + ")\t" + pref);
             }

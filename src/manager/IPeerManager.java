@@ -13,4 +13,3 @@ public interface IPeerManager
     //Unchoke the list of peers
     public void unchockedPeers(Collection<Integer> unchokedPeersIds);
 }
-

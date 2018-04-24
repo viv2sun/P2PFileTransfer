@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +14,8 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.swing.text.DefaultEditorKit.CopyAction;
 
 import entities.PeerObject;
 import entities.message_entities.*;
@@ -52,6 +55,7 @@ public class Process implements Runnable, IFileManager, IPeerManager
     	int ucInterval = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.UnchokingInterval.toString())) * 1000;
     	
 		this.fm = new FileManager(id, fileName, fSize, pSize, ucInterval);
+//		System.out.println(fileName);
 		
 		ArrayList<PeerObject> peerList = new ArrayList<>(list);
 		for(PeerObject peer : peerList) {
@@ -62,7 +66,10 @@ public class Process implements Runnable, IFileManager, IPeerManager
 			}
 		}
 		this.pm = new PeerManager(id, peerList, fm.getBitmapSize(), config);
-		// create an event logger
+		// set the files that have it already correspondingly and create event logger
+		
+			
+		
 		this.hasCompleteFile.set(hasFile);
 		this.logMain = new LoggerMain(id, LoggerUtils.getLogger());
 		 
@@ -75,14 +82,16 @@ public class Process implements Runnable, IFileManager, IPeerManager
 		
 		if(hasFile) 
 		{
-			//if file is present in the peer, split the file into parts
+			//first copy the file here.
+//			Files.copy(source, out)
+			//if the peer has the file ,create pieces of it 
 			fm.splitFile();
 			fm.setAllParts();
 		}
 		else 
 		{
 			//log that no file is present with type debug
-			LoggerUtils.getLogger().debug("Peer does not have file");
+			LoggerUtils.getLogger().debug("Peer doesn't have the file");
 		}
 		
 		Thread t= new Thread(pm);

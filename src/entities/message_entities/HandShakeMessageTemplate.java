@@ -14,7 +14,8 @@ import io.ProtocolSerializable;
 public class HandShakeMessageTemplate implements ProtocolSerializable
 {
 	
-	private final String protocolName = "P2PFILESHARINGPROJ";
+	private final String protocolName = "P2PFILESHARINGPROJ"; //Will be the Handshake header
+	
     private final byte[] zeroBits = new byte[10];
     private byte[] peerId = new byte[4];
 
