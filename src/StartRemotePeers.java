@@ -15,7 +15,7 @@ import com.jcraft.jsch.Session;
 
 public class StartRemotePeers {
 
-private static final String scriptPrefix = "java -cp bin/ PeerProcess ";
+private static final String scriptPrefix = "cd P2PFileTransfer; java -cp bin/ PeerProcess ";//cd P2PFileTransfer; java -cp bin/ PeerProcess
 
 public static class PeerInfo {
 
@@ -59,11 +59,12 @@ String ciseUser = "hb0"; // change with your CISE username
 * folder.
 */
 
-peerList.add(new PeerInfo("1", "lin114-04.cise.ufl.edu"));
-peerList.add(new PeerInfo("2", "lin114-01.cise.ufl.edu"));
-//peerList.add(new PeerInfo("3", "lin114-09.cise.ufl.edu"));
-//peerList.add(new PeerInfo("4", "lin114-04.cise.ufl.edu"));
-//peerList.add(new PeerInfo("5", "lin114-05.cise.ufl.edu"));
+peerList.add(new PeerInfo("1001", "lin114-00.cise.ufl.edu"));
+peerList.add(new PeerInfo("1002", "lin114-01.cise.ufl.edu"));
+peerList.add(new PeerInfo("1003", "lin114-02.cise.ufl.edu"));
+peerList.add(new PeerInfo("1004", "lin114-03.cise.ufl.edu"));
+peerList.add(new PeerInfo("1005", "lin114-04.cise.ufl.edu"));
+peerList.add(new PeerInfo("1006", "lin114-05.cise.ufl.edu"));
 
 for (PeerInfo remotePeer : peerList) {
 try {

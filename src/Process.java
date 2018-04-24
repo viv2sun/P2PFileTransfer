@@ -220,7 +220,7 @@ public class Process implements Runnable, IFileManager, IPeerManager
 	 * @see manager.IPeerManager#neighborsCompletedDownload()
 	 */
     @Override
-    public void neighborsCompletedDownload() 
+    public void finishedDownloading() 
     {
         LoggerUtils.getLogger().debug("All the peers have completely downloaded the file");
         
@@ -234,10 +234,10 @@ public class Process implements Runnable, IFileManager, IPeerManager
 
     /*
      * (non-Javadoc)
-     * @see manager.IFileManager#fileCompleted()
+     * @see manager.IFileManager#fileDownloaded()
      */
     @Override
-    public synchronized void fileCompleted() 
+    public synchronized void fileDownloaded() 
     {
         LoggerUtils.getLogger().debug("The local peer has completed downloading the file");
         this.logMain.fileDownloadedMessage();
@@ -252,10 +252,10 @@ public class Process implements Runnable, IFileManager, IPeerManager
 
     /*
      * (non-Javadoc)
-     * @see manager.IFileManager#pieceArrived(int)
+     * @see manager.IFileManager#partDownloaded(int)
      */
     @Override
-    public synchronized void pieceArrived(int partIdx) 
+    public synchronized void partDownloaded(int partIdx) 
     {
         for (Connector connector : connectorSet) 
         {
@@ -270,10 +270,10 @@ public class Process implements Runnable, IFileManager, IPeerManager
     
     /*
      * (non-Javadoc)
-     * @see manager.IPeerManager#chockedPeers(java.util.Collection)
+     * @see manager.IPeerManager#chokeListOfPeers(java.util.Collection)
      */
     @Override
-    public synchronized void chockedPeers(Collection<Integer> chokedPeersIds) 
+    public synchronized void chokeListOfPeers(Collection<Integer> chokedPeersIds) 
     {
         for (Connector connector : connectorSet) 
         {
@@ -287,10 +287,10 @@ public class Process implements Runnable, IFileManager, IPeerManager
 
     /*
      * (non-Javadoc)
-     * @see manager.IPeerManager#unchockedPeers(java.util.Collection)
+     * @see manager.IPeerManager#unchockeListOfPeers(java.util.Collection)
      */
     @Override
-    public synchronized void unchockedPeers(Collection<Integer> unchokedPeersIds) 
+    public synchronized void unchokeListOfPeers(Collection<Integer> unchokedPeersIds) 
     {
         for (Connector connector : this.connectorSet) 
         {

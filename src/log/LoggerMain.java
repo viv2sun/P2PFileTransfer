@@ -114,7 +114,7 @@ public class LoggerMain
     public void pieceDownloadedMessage(int peerId, int pieceIdx, int currNumberOfPieces) 
     {
     	String temp = msg;
-    	temp =  pieceIdx + "has been downloaded by" + temp+" from peer " + peerId + " Now the number of pieces it has is " + currNumberOfPieces + ".";
+    	temp =  "Piece: " + pieceIdx + " has been downloaded by " + temp+" from peer " + peerId + " Now the number of pieces it has is " + currNumberOfPieces + ".";
     	
         logUtils.info(temp);
     }

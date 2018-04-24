@@ -51,7 +51,7 @@ public class FileManager {
             fileObj.WriteArrayAsParts(partArr, ind);
             for(IFileManager fmModule : fmModules) 
             {
-                fmModule.pieceArrived (ind);
+                fmModule.partDownloaded(ind); 
             }
         }
         
@@ -61,7 +61,7 @@ public class FileManager {
             
             for(IFileManager fmModule : fmModules)
             {
-                fmModule.fileCompleted();
+                fmModule.fileDownloaded();
             }
         }
     }

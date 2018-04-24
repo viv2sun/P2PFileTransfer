@@ -225,7 +225,7 @@ public class PeerManager implements Runnable
         
         for (IPeerManager listener : peerManagerModules) 
         {
-            listener.neighborsCompletedDownload();
+            listener.finishedDownloading();
         }
     }
 
@@ -300,7 +300,7 @@ public class PeerManager implements Runnable
                 }
                 for (IPeerManager module : peerManagerModules) 
                 {
-                    module.unchockedPeers(PeerObject.getPeerIds(unchokedPeers));
+                    module.unchokeListOfPeers(PeerObject.getPeerIds(unchokedPeers));
                 }
             }
         }
@@ -396,8 +396,8 @@ public class PeerManager implements Runnable
             
             for (IPeerManager module : peerManagerModules) 
             {
-                module.chockedPeers(peersChokedIds);
-                module.unchockedPeers(preferredNeighIds);
+                module.chokeListOfPeers(peersChokedIds);
+                module.unchokeListOfPeers(preferredNeighIds);
             }
                         
             if (unchokedPeers != null) 
