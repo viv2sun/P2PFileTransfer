@@ -19,22 +19,22 @@ public class Connector implements Runnable {
 	
 	private static final int PEER_NOT_SET = -1;
 	
-	private final int locPeerId;
-    private final Socket socket;
-    private final ProtocolObjectOutputStream out;
-    private final FileManager fm;
-    private final PeerManager pm;
-    private final boolean isConnected;
-    private final int expRemPId;
-    private final AtomicInteger remPeerId;
-    private final BlockingQueue<MessageTemplate> q = new LinkedBlockingQueue<>();
-    
-    /*
-     * Connector Constructor
-     */
+  private final int locPeerId;
+  private final Socket socket;
+  private final ProtocolObjectOutputStream out;
+  private final FileManager fm;
+  private final PeerManager pm;
+  private final boolean isConnected;
+  private final int expRemPId;
+  private final AtomicInteger remPeerId;
+  private final BlockingQueue<MessageTemplate> q = new LinkedBlockingQueue<>();
+  
+  /*
+   * Connector Constructor
+   */
 	public Connector(int id, Socket s, FileManager fm, PeerManager pm) throws IOException 
 	{
-	     this(id, false, -1, s, fm, pm);
+	   this(id, false, -1, s, fm, pm);
 	}
 	
 	/*
@@ -62,168 +62,168 @@ public class Connector implements Runnable {
 	}
 
 	 @Override
-    public void run() 
+  public void run() 
 	 {
-        new Thread() 
+    new Thread() 
+    {
+      private boolean isChoked = true;
+
+      @Override
+      public void run() 
+      {
+        Thread.currentThread().setName(getClass().getName() + "-" + remPeerId + "-sending thread");
+        while(true) 
         {
-            private boolean isChoked = true;
-
-            @Override
-            public void run() 
+          try 
+          {
+            final MessageTemplate message = q.take();
+            
+            if(message == null) 
             {
-                Thread.currentThread().setName(getClass().getName() + "-" + remPeerId + "-sending thread");
-                while(true) 
-                {
-                    try 
-                    {
-                        final MessageTemplate message = q.take();
-                        
-                        if(message == null) 
-                        {
-                            continue;
-                        }
-                        
-                        if(remPeerId.get() != PEER_NOT_SET) 
-                        {
-                            switch (message.type) 
-                            {
-                                case Choke: 
-                                {
-                                    if (!isChoked) 
-                                    {
-                                        isChoked = true;
-                                        sendInternal(message);
-                                    }
-                                    break;
-                                }
-
-                                case Unchoke: 
-                                {
-                                    if (isChoked) 
-                                    {
-                                        isChoked = false;
-                                        sendInternal(message);
-                                    }
-                                    
-                                    break;
-                                }
-
-                                default:
-                                    sendInternal(message);
-                            }
-                        } else 
-                        {
-                        	String msg = "Message Type ";
-                            msg += message.type + " cannot be sent, because there is no handshake from the remote peer";
-                        	
-                            LoggerUtils.getLogger().debug(msg);
-                        }
-                    } 
-                    catch(IOException ex) 
-                    {
-                        LoggerUtils.getLogger().warning(ex);
-                    } 
-                    catch (InterruptedException ex) 
-                    {	}
-                }
+              continue;
             }
-        }.start();
+            
+            if(remPeerId.get() != PEER_NOT_SET) 
+            {
+              switch (message.type) 
+              {
+                case Choke: 
+                {
+                  if (!isChoked) 
+                  {
+                    isChoked = true;
+                    sendInternal(message);
+                  }
+                  break;
+                }
 
+                case Unchoke: 
+                {
+                  if (isChoked) 
+                  {
+                    isChoked = false;
+                    sendInternal(message);
+                  }
+                  
+                  break;
+                }
+
+                default:
+                  sendInternal(message);
+              }
+            } else 
+            {
+            	String msg = "Message Type ";
+              msg += message.type + " cannot be sent, because there is no handshake from the remote peer";
+            	
+              LoggerUtils.getLogger().debug(msg);
+            }
+          } 
+          catch(IOException ex) 
+          {
+            LoggerUtils.getLogger().warning(ex);
+          } 
+          catch (InterruptedException ex) 
+          {	}
+        }
+      }
+    }.start();
+
+    try 
+    {
+      final ProtocolInputStream in = new ProtocolInputStream(socket.getInputStream());
+
+      out.writeObject(new HandShakeMessageTemplate(locPeerId));
+      
+      HandShakeMessageTemplate rcvdHandshake = (HandShakeMessageTemplate)in.readObject();
+      
+      remPeerId.set(rcvdHandshake.returnPeerId());
+      
+      Thread.currentThread().setName(getClass().getName() + "-" + remPeerId.get());
+      final LoggerMain LoggerMain = new LoggerMain(locPeerId, LoggerUtils.getLogger());
+      final MessageHandler msgHandler = new MessageHandler(remPeerId.get(), fm, pm, LoggerMain);
+      if (isConnected && (remPeerId.get() != expRemPId)) 
+      {
+        throw new Exception("Remote peer id " + remPeerId + " does not match with the expected id: " + expRemPId);
+      }
+
+      // Handshake successful
+      LoggerMain.establishPeerConnectionLog(remPeerId.get(), isConnected);
+
+      sendInternal(msgHandler.handle(rcvdHandshake));
+      while(true) 
+      {
         try 
         {
-            final ProtocolInputStream in = new ProtocolInputStream(socket.getInputStream());
-
-            out.writeObject(new HandShakeMessageTemplate(locPeerId));
-            
-            HandShakeMessageTemplate rcvdHandshake = (HandShakeMessageTemplate)in.readObject();
-            
-            remPeerId.set(rcvdHandshake.returnPeerId());
-            
-            Thread.currentThread().setName(getClass().getName() + "-" + remPeerId.get());
-            final LoggerMain LoggerMain = new LoggerMain(locPeerId, LoggerUtils.getLogger());
-            final MessageHandler msgHandler = new MessageHandler(remPeerId.get(), fm, pm, LoggerMain);
-            if (isConnected && (remPeerId.get() != expRemPId)) 
-            {
-                throw new Exception("Remote peer id " + remPeerId + " does not match with the expected id: " + expRemPId);
-            }
-
-            // Handshake successful
-            LoggerMain.establishPeerConnectionLog(remPeerId.get(), isConnected);
-
-            sendInternal(msgHandler.handle(rcvdHandshake));
-            while(true) 
-            {
-                try 
-                {
-                    sendInternal(msgHandler.handle((MessageTemplate)in.readObject()));
-                } 
-                catch (Exception ex) 
-                {
-                    LoggerUtils.getLogger().warning(ex);
-                    break;
-                }
-            }
+          sendInternal(msgHandler.handle((MessageTemplate)in.readObject()));
         } 
         catch (Exception ex) 
         {
-            LoggerUtils.getLogger().warning(ex);
-        } 
-        finally 
-        {
-            try 
-            {
-                socket.close();
-            } 
-            catch (Exception e) 
-            {	}
+          LoggerUtils.getLogger().warning(ex);
+          break;
         }
-        
-        String warningMsg = Thread.currentThread().getName();
-        warningMsg += " terminating, messages will no longer be accepted.";
-        
-        LoggerUtils.getLogger().warning(warningMsg);
-    }
-
-    @Override
-    public boolean equals(Object obj) 
+      }
+    } 
+    catch (Exception ex) 
     {
-        if (obj instanceof Connector) 
+      LoggerUtils.getLogger().warning(ex);
+    } 
+    finally 
+    {
+      try 
+      {
+        socket.close();
+      } 
+      catch (Exception e) 
+      {	}
+    }
+    
+    String warningMsg = Thread.currentThread().getName();
+    warningMsg += " terminating, messages will no longer be accepted.";
+    
+    LoggerUtils.getLogger().warning(warningMsg);
+  }
+
+  @Override
+  public boolean equals(Object obj) 
+  {
+    if (obj instanceof Connector) 
+    {
+      return ((Connector) obj).remPeerId == remPeerId;
+    }
+    
+    return false;
+  }
+
+  @Override
+  public int hashCode() 
+  {
+    int hash = 7;
+    hash = 41 * hash + locPeerId;
+    return hash;
+  }
+
+  public void send(final MessageTemplate msg) 
+  {
+    q.add(msg);
+  }
+
+  private synchronized void sendInternal(MessageTemplate msg) throws IOException 
+  {
+    if (msg != null) 
+    {
+      out.writeObject(msg);
+      
+      switch(msg.type) 
+      {
+        case Request: 
         {
-            return ((Connector) obj).remPeerId == remPeerId;
+          new java.util.Timer().schedule(
+              new TimerEntity((Request) msg, fm, out, msg, remPeerId.get()),
+              (long)pm.getIntervalForUnchoking() * 2
+          );
         }
-        
-        return false;
+      }
     }
-
-    @Override
-    public int hashCode() 
-    {
-        int hash = 7;
-        hash = 41 * hash + locPeerId;
-        return hash;
-    }
-
-    public void send(final MessageTemplate msg) 
-    {
-        q.add(msg);
-    }
-
-    private synchronized void sendInternal(MessageTemplate msg) throws IOException 
-    {
-        if (msg != null) 
-        {
-            out.writeObject(msg);
-            
-            switch(msg.type) 
-            {
-                case Request: 
-                {
-                    new java.util.Timer().schedule(
-                            new TimerEntity((Request) msg, fm, out, msg, remPeerId.get()),
-                            (long)pm.getIntervalForUnchoking() * 2
-                    );
-                }
-            }
-        }
-    }
+  }
 }

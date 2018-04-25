@@ -32,28 +32,28 @@ public class Process implements Runnable, IFileManager, IPeerManager
 	private final Properties config;
 	private final FileManager fm;
 	private final PeerManager pm;
-    private final AtomicBoolean hasCompleteFile = new AtomicBoolean(false);
-    private final AtomicBoolean peersFileCompleted = new AtomicBoolean(false);
-    private final AtomicBoolean finished = new AtomicBoolean(false);
-    private final LoggerMain logMain;
-    private final Set<Connector> connectorSet = Collections.newSetFromMap(new ConcurrentHashMap<Connector, Boolean>());
+  private final AtomicBoolean hasCompleteFile = new AtomicBoolean(false);
+  private final AtomicBoolean peersFileCompleted = new AtomicBoolean(false);
+  private final AtomicBoolean finished = new AtomicBoolean(false);
+  private final LoggerMain logMain;
+  private final Set<Connector> connectorSet = Collections.newSetFromMap(new ConcurrentHashMap<Connector, Boolean>());
 	
-    /*
-     * Constructor of Process
-     */
+  /*
+   * Constructor of Process
+   */
 	public Process(int id, String addr, int port, boolean hasFile, List<PeerObject> list) throws FileNotFoundException, Exception 
 	{
 		this.id = id;
 		this.port = port;
 		this.hasFile = hasFile;
 		this.config = ConfigurationReader
-				      .readConfigFile(new FileReader(ConfigurationReader.CONFIGURATION_FILE));
+				   .readConfigFile(new FileReader(ConfigurationReader.CONFIGURATION_FILE));
 		
 		int fSize = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.FileSize.toString()));
-    	String fileName = config.getProperty (ConfigurationReader.ConfigurationParameters.FileName.toString());
-    	int pSize = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.PieceSize.toString()));
-    	int ucInterval = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.UnchokingInterval.toString())) * 1000;
-    	
+  	String fileName = config.getProperty (ConfigurationReader.ConfigurationParameters.FileName.toString());
+  	int pSize = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.PieceSize.toString()));
+  	int ucInterval = Integer.parseInt(config.getProperty(ConfigurationReader.ConfigurationParameters.UnchokingInterval.toString())) * 1000;
+  	
 		this.fm = new FileManager(id, fileName, fSize, pSize, ucInterval);
 //		System.out.println(fileName);
 		
@@ -82,6 +82,7 @@ public class Process implements Runnable, IFileManager, IPeerManager
 		
 		if(hasFile) 
 		{
+			System.out.println("Entering the process initialization module--------");
 			//first copy the file here.
 //			Files.copy(source, out)
 			//if the peer has the file ,create pieces of it 
@@ -105,8 +106,8 @@ public class Process implements Runnable, IFileManager, IPeerManager
 	public void connect(List<PeerObject> pList) 
 	{
 		Iterator<PeerObject> itr = pList.iterator();
-        while (itr.hasNext()) 
-        {
+    while (itr.hasNext()) 
+    {
 			do {
 				Socket s = new Socket();
 				PeerObject pObj = itr.next();
@@ -123,13 +124,13 @@ public class Process implements Runnable, IFileManager, IPeerManager
 					s = new Socket(pObj.getAddress(),pObj.getPort());
 				
 					if (addConnector(new Connector(id, true, pObj.getId(),s,fm, pm))) {
-	                    itr.remove();
-	                    debugMsg = " Connected to peer: " + pObj.getId() + " (" + pObj.getAddress() + ":" 
+	          itr.remove();
+	          debugMsg = " Connected to peer: " + pObj.getId() + " (" + pObj.getAddress() + ":" 
 								+ pObj.getPort() + ")";
-	                    
-	                    //log connected to peer
-	                    LoggerUtils.getLogger().debug(debugMsg);
-	                }
+	          
+	          //log connected to peer
+	          LoggerUtils.getLogger().debug(debugMsg);
+	        }
 				}
 				catch(Exception e) 
 				{					
@@ -144,11 +145,11 @@ public class Process implements Runnable, IFileManager, IPeerManager
 			while(itr.hasNext());
 			itr = pList.iterator();
 			try {
-                Thread.sleep(5);
-            } 
+        Thread.sleep(5);
+      } 
 			catch (InterruptedException ex) 
 			{	}
-        }    
+    }  
 	}
 	
 	/*
@@ -156,151 +157,151 @@ public class Process implements Runnable, IFileManager, IPeerManager
 	 */
 	private synchronized boolean addConnector(Connector ctr) 
 	{
-        if (!connectorSet.contains(ctr)) 
-        {
-        	connectorSet.add(ctr);
-            Thread t = new Thread(ctr);
-            t.start();
-            try 
-            {
-                wait(10);
-            } 
-            catch (InterruptedException e) 
-            {
-               // log exceptions
-            	LoggerUtils.getLogger().warning(e);
-            }
+    if (!connectorSet.contains(ctr)) 
+    {
+    	connectorSet.add(ctr);
+      Thread t = new Thread(ctr);
+      t.start();
+      try 
+      {
+        wait(10);
+      } 
+      catch (InterruptedException e) 
+      {
+        // log exceptions
+      	LoggerUtils.getLogger().warning(e);
+      }
 
-        }
-        else 
-        {
-        	String debugMsg = "Peer " + ctr.getPeerId() + " is trying to connect, but there is an already existing connection";
-        	
-             // trying to connect but connection already exists log error
-        	LoggerUtils.getLogger().debug(debugMsg);
-        }
-        
-        return true;
     }
+    else 
+    {
+    	String debugMsg = "Peer " + ctr.getPeerId() + " is trying to connect, but there is an already existing connection";
+    	
+       // trying to connect but connection already exists log error
+    	LoggerUtils.getLogger().debug(debugMsg);
+    }
+    
+    return true;
+  }
 	
 	@Override
-    public void run() 
+  public void run() 
 	{
+    try 
+    {
+      ServerSocket serverSocket = new ServerSocket(this.port);
+      
+      while (!finished.get()) 
+      {
         try 
         {
-            ServerSocket serverSocket = new ServerSocket(this.port);
-            
-            while (!finished.get()) 
-            {
-                try 
-                {
-                    LoggerUtils.getLogger().debug(Thread.currentThread().getName() + ": Peer " + this.id + " listening on port " + this.port + ".");
-                    addConnector(new Connector(this.id, serverSocket.accept(), fm, pm));
+          LoggerUtils.getLogger().debug(Thread.currentThread().getName() + ": Peer " + this.id + " listening on port " + this.port + ".");
+          addConnector(new Connector(this.id, serverSocket.accept(), fm, pm));
 
-                } 
-                catch (Exception e) 
-                {
-                    LoggerUtils.getLogger().warning(e);
-                }
-            }
         } 
-        catch (IOException ex) 
+        catch (Exception e) 
         {
-            LoggerUtils.getLogger().warning(ex);
-        } 
-        finally 
-        {
-            LoggerUtils.getLogger().warning(Thread.currentThread().getName()
-                    + " terminating, TCP connections will no longer be accepted.");
+          LoggerUtils.getLogger().warning(e);
         }
+      }
+    } 
+    catch (IOException ex) 
+    {
+      LoggerUtils.getLogger().warning(ex);
+    } 
+    finally 
+    {
+      LoggerUtils.getLogger().warning(Thread.currentThread().getName()
+          + " terminating, TCP connections will no longer be accepted.");
     }
+  }
 
 	/*
 	 * (non-Javadoc)
 	 * @see manager.IPeerManager#neighborsCompletedDownload()
 	 */
-    @Override
-    public void finishedDownloading() 
-    {
-        LoggerUtils.getLogger().debug("All the peers have completely downloaded the file");
-        
-        peersFileCompleted.set(true);
-        if(hasCompleteFile.get() && peersFileCompleted.get()) 
-        {
-            finished.set(true);
-            System.exit(0);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see manager.IFileManager#fileDownloaded()
-     */
-    @Override
-    public synchronized void fileDownloaded() 
-    {
-        LoggerUtils.getLogger().debug("The local peer has completed downloading the file");
-        this.logMain.fileDownloadedMessage();
-        hasCompleteFile.set(true);
-        
-        if (hasCompleteFile.get() && peersFileCompleted.get()) 
-        {
-            finished.set(true);
-            System.exit(0);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see manager.IFileManager#partDownloaded(int)
-     */
-    @Override
-    public synchronized void partDownloaded(int partIdx) 
-    {
-        for (Connector connector : connectorSet) 
-        {
-            connector.send(new Have(partIdx));
-            
-            if (!pm.isPeerInteresting(connector.getPeerId(), fm.getPartsRcvd())) 
-            {
-                connector.send(new NotInterested());
-            }
-        }
-    }
+  @Override
+  public void finishedDownloading() 
+  {
+    LoggerUtils.getLogger().debug("All the peers have completely downloaded the file");
     
-    /*
-     * (non-Javadoc)
-     * @see manager.IPeerManager#chokeListOfPeers(java.util.Collection)
-     */
-    @Override
-    public synchronized void chokeListOfPeers(Collection<Integer> chokedPeersIds) 
+    peersFileCompleted.set(true);
+    if(hasCompleteFile.get() && peersFileCompleted.get()) 
     {
-        for (Connector connector : connectorSet) 
-        {
-            if (chokedPeersIds.contains(connector.getPeerId())) 
-            {
-                LoggerUtils.getLogger().debug("Choking " + connector.getPeerId());
-                connector.send(new Choke());
-            }
-        }
+      finished.set(true);
+      System.exit(0);
     }
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see manager.IPeerManager#unchockeListOfPeers(java.util.Collection)
-     */
-    @Override
-    public synchronized void unchokeListOfPeers(Collection<Integer> unchokedPeersIds) 
+  /*
+   * (non-Javadoc)
+   * @see manager.IFileManager#fileDownloaded()
+   */
+  @Override
+  public synchronized void fileDownloaded() 
+  {
+    LoggerUtils.getLogger().debug("The local peer has completed downloading the file");
+    this.logMain.fileDownloadedMessage();
+    hasCompleteFile.set(true);
+    
+    if (hasCompleteFile.get() && peersFileCompleted.get()) 
     {
-        for (Connector connector : this.connectorSet) 
-        {
-            if (unchokedPeersIds.contains(connector.getPeerId())) 
-            {
-                LoggerUtils.getLogger().debug("Unchoking " + connector.getPeerId());
-                connector.send(new UnChoke());
-            }
-        }
+      finished.set(true);
+      System.exit(0);
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see manager.IFileManager#partDownloaded(int)
+   */
+  @Override
+  public synchronized void partDownloaded(int partIdx) 
+  {
+    for (Connector connector : connectorSet) 
+    {
+      connector.send(new Have(partIdx));
+      
+      if (!pm.isPeerInteresting(connector.getPeerId(), fm.getPartsRcvd())) 
+      {
+        connector.send(new NotInterested());
+      }
+    }
+  }
+  
+  /*
+   * (non-Javadoc)
+   * @see manager.IPeerManager#chokeListOfPeers(java.util.Collection)
+   */
+  @Override
+  public synchronized void chokeListOfPeers(Collection<Integer> chokedPeersIds) 
+  {
+    for (Connector connector : connectorSet) 
+    {
+      if (chokedPeersIds.contains(connector.getPeerId())) 
+      {
+        LoggerUtils.getLogger().debug("Choking " + connector.getPeerId());
+        connector.send(new Choke());
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * @see manager.IPeerManager#unchockeListOfPeers(java.util.Collection)
+   */
+  @Override
+  public synchronized void unchokeListOfPeers(Collection<Integer> unchokedPeersIds) 
+  {
+    for (Connector connector : this.connectorSet) 
+    {
+      if (unchokedPeersIds.contains(connector.getPeerId())) 
+      {
+        LoggerUtils.getLogger().debug("Unchoking " + connector.getPeerId());
+        connector.send(new UnChoke());
+      }
+    }
+  }
 	
 	
 }

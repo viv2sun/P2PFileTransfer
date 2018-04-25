@@ -7,6 +7,6 @@ public class Interested extends MessageTemplate
 	 */
 	public Interested() 
 	{
-        super(MessageType.Interested, null);
-    }
+    super(MessageType.Interested, null);
+  }
 }

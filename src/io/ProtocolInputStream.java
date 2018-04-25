@@ -16,32 +16,32 @@ public class ProtocolInputStream extends DataInputStream implements ObjectInput
 	/*
 	 * Constructor of the Protocol Input Stream
 	 */
-    public ProtocolInputStream(InputStream inputStream) 
-    {
-        super(inputStream);
-    }
+  public ProtocolInputStream(InputStream inputStream) 
+  {
+    super(inputStream);
+  }
 
-    /*
-     * (non-Javadoc)
-     * @see java.io.ObjectInput#readObject()
-     */
-    @Override
-    public Object readObject() throws ClassNotFoundException, IOException 
+  /*
+   * (non-Javadoc)
+   * @see java.io.ObjectInput#readObject()
+   */
+  @Override
+  public Object readObject() throws ClassNotFoundException, IOException 
+  {
+    if (isHSSignalReceived) 
     {
-        if (isHSSignalReceived) 
-        {
-            final int len = readInt();
-            final int dataLength = len - 1;
-            MessageTemplate message = MessageTemplate.returnNewInstance(MessageType.valueOf(readByte()), dataLength);
-            message.readData(this);
-            return message;
-        }
-        else 
-        {
-            HandShakeMessageTemplate handshake = new HandShakeMessageTemplate();
-            handshake.readData(this);
-            isHSSignalReceived = true;
-            return handshake;
-        }
+      final int len = readInt();
+      final int dataLength = len - 1;
+      MessageTemplate message = MessageTemplate.returnNewInstance(MessageType.valueOf(readByte()), dataLength);
+      message.readData(this);
+      return message;
     }
+    else 
+    {
+      HandShakeMessageTemplate handshake = new HandShakeMessageTemplate();
+      handshake.readData(this);
+      isHSSignalReceived = true;
+      return handshake;
+    }
+  }
 }

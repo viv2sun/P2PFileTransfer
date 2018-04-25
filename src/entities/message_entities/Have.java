@@ -7,14 +7,14 @@ public class Have extends MessageTemplate
 	 */
 	public Have(byte[] pieceIndex) 
 	{
-        super(MessageType.Have, pieceIndex);
-    }
+    super(MessageType.Have, pieceIndex);
+  }
 
 	/*
 	 * Constructor of the Have message with int as the parameter
 	 */
-    public Have(int pieceIndex) 
-    {
-        this(getPieceIndexByteArray(pieceIndex));
-    }
+  public Have(int pieceIndex) 
+  {
+    this(getPieceIndexByteArray(pieceIndex));
+  }
 }

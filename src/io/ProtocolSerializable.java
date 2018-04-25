@@ -10,5 +10,5 @@ public interface ProtocolSerializable
 	public void readData(DataInputStream in) throws IOException;
 	
 	//writes the data back to the output stream
-    public void writeData(DataOutputStream out) throws IOException;
+  public void writeData(DataOutputStream out) throws IOException;
 }

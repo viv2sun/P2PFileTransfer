@@ -13,30 +13,30 @@ public class ProtocolObjectOutputStream extends DataOutputStream implements Obje
 	 */
 	public ProtocolObjectOutputStream(OutputStream outputStream) 
 	{
-        super(outputStream);
-    }
+    super(outputStream);
+  }
 
 	/*
 	 * (non-Javadoc)
 	 * @see java.io.ObjectOutput#writeObject(java.lang.Object)
 	 */
-    @Override
-    public void writeObject(Object o) throws IOException 
-    {
-    	//Writes the payload ot the output stream
-    	if(o instanceof MessageTemplate) 
-    	{
-    		MessageTemplate temp = (MessageTemplate) o;
-            temp.writeData(this);
-        }
-    	else if(o instanceof HandShakeMessageTemplate) 
-    	{
-        	HandShakeMessageTemplate temp = (HandShakeMessageTemplate) o;
-            temp.writeData(this);
-        }
-    	else 
-    	{
-    		throw new UnsupportedOperationException("Unsupported Message Type: " + o.getClass().getName());
-    	}
+  @Override
+  public void writeObject(Object o) throws IOException 
+  {
+  	//Writes the payload ot the output stream
+  	if(o instanceof MessageTemplate) 
+  	{
+  		MessageTemplate temp = (MessageTemplate) o;
+      temp.writeData(this);
     }
+  	else if(o instanceof HandShakeMessageTemplate) 
+  	{
+    	HandShakeMessageTemplate temp = (HandShakeMessageTemplate) o;
+      temp.writeData(this);
+    }
+  	else 
+  	{
+  		throw new UnsupportedOperationException("Unsupported Message Type: " + o.getClass().getName());
+  	}
+  }
 }

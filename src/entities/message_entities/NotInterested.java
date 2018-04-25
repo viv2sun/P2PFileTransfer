@@ -8,6 +8,6 @@ public class NotInterested extends MessageTemplate
 	 */
 	public NotInterested() 
 	{
-        super(MessageType.NotInterested, null);
-    }
+    super(MessageType.NotInterested, null);
+  }
 }
